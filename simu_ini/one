@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#astra => particle.in
+#--------------------
+#ast2impz ast.0528.001 
+
+./cleanUp
+
+genimpactzin lte.impz lineopt
+ 
+mpirun -np 1 ImpactZ.exe > log
+
+

@@ -1,0 +1,138 @@
+!control section
+!===============
+&control
+default_order = 2;
+steps=0;
+
+lsc=0;
+zwake=0;
+csr=0;
+tsc=0;
+trwake=0;
+
+core_num_T = 1;
+core_num_L = 1;
+meshx = 32;
+meshy = 32;
+meshz = 64;
+kinetic_energy = 16.551e6;
+freq_rf_scale = 1.3e9;
+
+slice_bin=100;
+sample_out=1e5;
+
+pipe_radius=20e-3
+error = 1
+
+&end
+
+!beam section
+!==============
+&beam
+mass = 0.511001e6;
+charge = -1.0;
+
+distribution_type = 35;
+Np = 10000;
+total_charge = 1e-9;
+
+sigx=1.7e-3, sigxp=5.73e-5;
+sigy=1.7e-3, sigyp=5.65e-5;
+!emit_nx=50e-6, beta_x=39, alpha_x=0.76;
+!emit_ny=50e-6, beta_y=39, alpha_y=0.76;
+
+sigz=1.3e-3, sigE=22.075e3;
+
+&end
+
+&lattice
+
+!drift section
+!-------------
+D1: Drift,L=0.5387499999999998
+D2: Drift,L=0.9724999999999997
+D3: Drift,L=1.2199999999999993
+D4: Drift,L=5.7405
+D5: Drift,L=0.3125000000000013
+D6: Drift,L=0.3124999999999995
+D7: Drift,L=0.3125000000000013
+D8: Drift,L=1.439500000000002
+D9: Drift,L=0.03249999999999659
+D10: Drift,L=1.4932499999999997
+D11: Drift,L=0.038000000000000256
+D12: Drift,L=0.2
+D13: Drift,L=0.69065
+D14: Drift,L=0.628
+D15: Drift,L=0.628
+D16: Drift,L=0.69065
+D17: Drift,L=0.2
+D18: Drift,L=0.6702500000000007
+D19: Drift,L=3.8205000000000005
+D20: Drift,L=0.16249999999999915
+D21: Drift,L=0.37249999999999645
+D22: Drift,L=0.27724999999999866
+D23: Drift,L=0.1050000000000002
+D24: Drift,L=0.1050000000000002
+
+!quad section
+!-------------
+HIGH1_Q4: Quad,L=0.0675,K1=-7.688062919920765
+HIGH1_Q6: Quad,L=0.0675,K1=10.626746992136576
+HIGH1_Q7: Quad,L=0.0675,K1=-5.012894892348159
+
+PST_QT3: Quad,L=0.0675,K1=-0.3778133777789633
+PST_QT4: Quad,L=0.0675,K1=-0.02745736757114559
+PST_QT5: Quad,L=0.0675,K1=-0.0417351987081413
+PST_QT6: Quad,L=0.0675,K1=-0.34815942080212603
+
+HIGH2_Q1: Quad,L=0.0675,K1=32.06581214428667
+HIGH2_Q2: Quad,L=0.0675,K1=-28.689654227738604
+High2_Q5: Quad,L=0.0675,K1=-3.4750044398041857
+
+High3_Q1: Quad,L=0.0675,K1=28.28896424016942
+High3_Q2: Quad,L=0.0675,K1=-39.334764453737165
+High3_Q3: Quad,L=0.0675,K1=5.149335275571189
+
+!bend section
+!-------------
+Bend1: Bend,L=0.333047,angle=-0.3316125578789226,e1=0.0,e2=-0.3316125578789226,hgap=0.04,rotate_z=1.5707963267948966,fint=0.5
+Bend2: Bend,L=0.333047,angle=0.3316125578789226,e1=0.3316125578789226,e2=0.0,hgap=0.04,rotate_z=1.5707963267948966,fint=0.5
+Bend3: Bend,L=0.333047,angle=0.3316125578789226,e1=0.0,e2=0.3316125578789226,hgap=0.04,rotate_z=1.5707963267948966,fint=0.5
+Bend4: Bend,L=0.333047,angle=-0.3316125578789226,e1=-0.3316125578789226,e2=0.0,hgap=0.04,rotate_z=1.5707963267948966,fint=0.5
+
+!undulator section
+!-------------
+K=3.49
+gam0=33.48445014089428
+lambdau=0.03
+K1=(sqrt(2)*pi*K/gam0/lambdau)**2
+undu1: Quad,L=3.3899999999999997,K1=238.2603318050416,order=5,steps=113*2
+
+!add chirp manually
+!----------------------
+!h0: ematrix, R65=-2.33
+
+!-2.33 is not enough, I=150A
+!h0: ematrix, R65=-4
+
+!-2.33 is not enough, I=200A
+h0: ematrix, R65=-4.7
+
+matchM: ematrix, R11=1
+
+w0: watch, filename_id=1000, sample_freq=1, coord_conv="normal",coord_info=0
+w1: watch, filename_id=1001, sample_freq=1, coord_conv="normal",coord_info=0
+w2: watch, filename_id=1002, sample_freq=1, coord_conv="normal",coord_info=0
+w3: watch, filename_id=1003, sample_freq=1, coord_conv="normal",coord_info=0
+w4: watch, filename_id=1004, sample_freq=1, coord_conv="normal",coord_info=0
+
+wm1: watch, filename_id=1010,sample_freq=1, coord_conv='IMPACT-Z',coord_info=0
+
+line1: line= (w0,D1,HIGH1_Q4,D2,HIGH1_Q6,D3,HIGH1_Q7,D4,PST_QT3,D5,PST_QT4,D6,PST_QT5,D7,PST_QT6,D8,HIGH2_Q1,D9,HIGH2_Q2,D10,D11,D12,w1,Bend1,D16,Bend2,D14,D15,Bend3,D16,Bend4,w2,D17,D18,High2_Q5,D19,wm1)
+line2: line= (High3_Q1,D20,High3_Q2,D21,High3_Q3,D22,w3,D23,undu1,D24,w4)
+
+line12: line=(line1,line2)
+lineopt: line=(line1,High3_Q1,D20,High3_Q2,D21,High3_Q3,D22,w3)
+
+&end
+
