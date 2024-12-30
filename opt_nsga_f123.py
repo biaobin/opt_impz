@@ -31,13 +31,15 @@ class MyProblem(Problem):
         self.update_simulation(x)
         
         # get simu results
-        f1,f2,f3 = self.get_simu_results()
+        g1,f1,f2 = self.get_simu_results()
         
+        print("g1=",g1)
         print("f1=",f1)
         print("f2=",f2)
-        print("f3=",f3)
         # Combine objectives into a single output array
-        out["F"] = np.column_stack([f1, f2, f3])
+        
+        #out["G"] = g1  #match 
+        out["F"] = np.column_stack([g1, f1, f2])  #eny & particle loss rate
 
     def update_simulation(self,x):
         # K1 = x
@@ -155,9 +157,14 @@ class MyProblem(Problem):
                 alphax = 4.55
                 betay = 0.4
                 alphay = 2.5
-                
-                f11 = (twiss["betax"]-betax)**2 +(twiss["alphax"]-alphax)**2
-                f12 = (twiss["betay"]-betay)**2 +(twiss["alphay"]-alphay)**2
+            
+                f1  = self.sene(twiss["betax"],betax,1)
+                f1 += self.sene(twiss["betay"],betay,1)
+                f1 += self.sene(twiss["alphax"],alphax,0.1)
+                f1 += self.sene(twiss["alphay"],alphay,0.1)
+                   
+                #f11 = (twiss["betax"]-betax)**2 +(twiss["alphax"]-alphax)**2
+                #f12 = (twiss["betay"]-betay)**2 +(twiss["alphay"]-alphay)**2
     
                 # get enx and eny
                 f2 = twiss["eny"]*1e6 #um rad  #(twiss["enx"]+twiss["eny"])/2
@@ -165,7 +172,8 @@ class MyProblem(Problem):
                 # particle loss rate
                 f3 = (self.np-partNum[-1,3])/self.np
                 
-                fval1.append(f11+f12)
+                #fval1.append(f1-1)
+                fval1.append(f1)
                 fval2.append(f2)
                 fval3.append(f3)
             else:
@@ -174,6 +182,14 @@ class MyProblem(Problem):
                 fval3.append(float('inf'))
                      
         return fval1,fval2,fval3
+    
+    def sene(self,V1,V2,T):
+        if V1 > V2:    
+            ff = ((V1-(V2+T))/T)**2
+        else:
+            ff = ((V2-(V1+T))/T)**2  
+        
+        return ff
         
 # Configure the NSGA-II algorithm
 #=========================================
@@ -181,8 +197,11 @@ class MyProblem(Problem):
 base_folder = r'./'
 os.chdir(base_folder)
 
+npop    = 128
+iterNum = 100
+
 algorithm = NSGA2(
-    pop_size=100,  # Population size
+    pop_size=npop,  # Population size
     sampling=FloatRandomSampling(),  # Random initialization
     crossover=SBX(prob=0.9, eta=15),  # Simulated Binary Crossover (SBX)
     mutation=PM(eta=20),  # Polynomial Mutation
@@ -197,7 +216,7 @@ algorithm = NSGA2(
 res = minimize(
     MyProblem(),  # Optimization problem
     algorithm,  # Algorithm
-    termination=('n_gen', 10),  # Terminate after 200 generations
+    termination=('n_gen', iterNum),  # Terminate after 200 generations
     seed=1,  # Set random seed for reproducibility
     verbose=True  # Print optimization progress
 )
@@ -208,32 +227,42 @@ print(res.F)  # Objective values of Pareto-optimal solutions
 print("Final Decision Variables:")
 print(res.X)  # Decision variables corresponding to Pareto-optimal solutions
 
-# Plot the Pareto front in 3D
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.scatter(res.F[:, 0], res.F[:, 1], res.F[:, 2], c='red')
-ax.set_xlabel("match error")
-ax.set_ylabel("eny (um rad)")
-ax.set_zlabel("loss rate")
-plt.title("Pareto Front")
-plt.show()
+#save the results
+with open("res.F","w") as f:
+    np.savetxt(f, res.F, fmt="%15.6e")
+
+with open("res.X","w") as f:
+    np.savetxt(f, res.X, fmt="%15.6e")
+
+
+## Plot the Pareto front in 3D
+#fig = plt.figure()
+#ax = fig.add_subplot(111, projection='3d')
+#ax.scatter(res.F[:, 0], res.F[:, 1], res.F[:, 2], c='red')
+#ax.set_xlabel("match error")
+#ax.set_ylabel("eny (um rad)")
+#ax.set_zlabel("loss rate")
+#plt.title("Pareto Front")
+#plt.show()
+#
+##%%
+## plt.figure()
+## plt.plot(res.F[:,0],res.F[:,2],'.')
+## plt.show()
+#
+#optrelt = (res.F[:,0] < 4) * (res.F[:,2] < 0.5e-6)
+#
+#res.F[optrelt,:]
+#
+#optX = res.X[optrelt,:]
+#
+#tmp = MyProblem()
+#tmp.update_simulation(optX)
 
 #%%
 # plt.figure()
 # plt.plot(res.F[:,0],res.F[:,2],'.')
 # plt.show()
-
-optrelt = (res.F[:,0] < 4) * (res.F[:,2] < 0.5e-6)
-
-res.F[optrelt,:]
-
-optX = res.X[optrelt,:]
-
-tmp = MyProblem()
-tmp.update_simulation(optX)
-
-
-
 
 #%% debug
 # tmp = MyProblem()
@@ -241,6 +270,3 @@ tmp.update_simulation(optX)
 # path = base_folder +'/simu_ini'
 # tmp.get_simu_results(debug="ON",path=path)
 # # Out[74]: ([0.4141675194760004], [30.7898], [0.0])
-
-
-
