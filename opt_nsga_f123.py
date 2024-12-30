@@ -110,19 +110,21 @@ class MyProblem(Problem):
             processes.append(process)
 
         # Wait for all processes to complete
-        idd= 0
+        j= 0
         for process in processes:
+            base_dest  = "simu_"+str(j+1)+"/"
             process.wait() #wait all simulations to be finished
 
             if process.returncode == 0:
-                print(f"Process in folder {"simu_"+str(idd+1)} completed.")
+                print(f"Process in folder {"simu_"+str(j+1)} completed.")
 
-            elif process.returncode !=0:
-                print("Error for the simulation with the para settings in simu_"+str(idd+1))
+            else:
+                print("Error for the simulation with the para settings in simu_"+str(j+1))
                 #touch a file to indicate the error
-                with open("RunError.flag","w"):
+                with open(base_dest+"RunError.flag","w"):
+                    print("RunError.flag is touched in simu_"+str(j+1))
                     pass
-            idd+=1        
+            j+=1        
        
     def get_simu_results(self, debug="OFF", path='.'):
         fval1 = []
@@ -180,6 +182,7 @@ class MyProblem(Problem):
                 fval2.append(f2)
                 fval3.append(f3)
             else:
+                print("IMPZ error, inf is given.")
                 fval1.append(float('inf'))
                 fval2.append(float('inf'))
                 fval3.append(float('inf'))
