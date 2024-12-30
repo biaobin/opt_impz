@@ -192,7 +192,8 @@ class MyProblem(Problem):
         
 # Configure the NSGA-II algorithm
 #=========================================
-base_folder = r'/mnt/d/NextCloud/subjects/20241205_match/02_Chicane/opt_python_match/03_match_BC2undu'
+#base_folder = r'/mnt/d/NextCloud/subjects/20241205_match/02_Chicane/opt_python_match/03_match_BC2undu'
+base_folder = r'./'
 os.chdir(base_folder)
 
 npop    = 128
