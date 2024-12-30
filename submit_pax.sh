@@ -4,7 +4,7 @@
 #SBATCH -J opt
 
 #128 tasks on 4 nodes:
-#SBATCH -N 1
+#SBATCH -N 4
 
 #one process for each physical core:
 #SBATCH -c 2
