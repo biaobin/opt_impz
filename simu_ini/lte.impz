@@ -4,10 +4,10 @@
 default_order = 2;
 steps=0;
 
-lsc=0;
+lsc=1;
 zwake=0;
-csr=0;
-tsc=0;
+csr=1;
+tsc=1;
 trwake=0;
 
 core_num_T = 1;

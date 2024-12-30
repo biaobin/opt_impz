@@ -195,8 +195,8 @@ class MyProblem(Problem):
 base_folder = r'/mnt/d/NextCloud/subjects/20241205_match/02_Chicane/opt_python_match/03_match_BC2undu'
 os.chdir(base_folder)
 
-npop    = 60
-iterNum = 20
+npop    = 128
+iterNum = 100
 
 algorithm = NSGA2(
     pop_size=npop,  # Population size
