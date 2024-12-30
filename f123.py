@@ -54,14 +54,14 @@ class MyProblem(Problem):
         #=======================================================
         print("self.cnt=",self.cnt)
         if self.cnt == 0:
-            print("copying files from ini_simu")
+            print("copying files from simu_ini")
             for j in range(self.pop_size):
                 foldername = "simu_"+str(j+1)
                 os.makedirs(foldername, exist_ok=True)
                 
-                # copy input files from ini_simu
+                # copy input files from simu_ini
                 # ------------------------------
-                base_from = "./ini_simu/"
+                base_from = "./simu_ini/"
                 base_dest  = foldername+"/"
                 files = ["lte.impz","particle.in","one","cleanUp"]
                 for file in files: 
@@ -98,32 +98,29 @@ class MyProblem(Problem):
             with open(fname,'w') as f:
                 f.writelines(line for line in lines)           
             print(fname+" is updated.")     
-
+        
         #(3). Now is ready to run all the simulations simultaneously
         #=======================================================
         processes = []
         for j in range(self.pop_size):
             base_dest  = "simu_"+str(j+1)+"/"
-            os.system(f"cd {base_dest} && bash cleanUp")  #cleanUp outputs
-
-            process = subprocess.Popen(["bash", 'one'], cwd=base_dest)
-            processes.append(process)
-
-        # Wait for all processes to complete
-        idd= 0
-        for process in processes:
-            process.wait() #wait all simulations to be finished
-
-            if process.returncode == 0:
-                print(f"Process in folder {"simu_"+str(idd+1)} completed.")
-
-            elif process.returncode !=0:
-                print("Error for the simulation with the para settings in simu_"+str(idd+1))
+            os.system(f"cd {base_dest} && bash cleanUp")  #cleanUp outputs 
+            try:
+                process = subprocess.Popen(["bash", 'one'], cwd=base_dest)
+                processes.append(process)
+            except:
+                print("Error for the simulation with the para settings.")
                 #touch a file to indicate the error
                 with open("RunError.flag","w"):
                     pass
-            idd+=1        
-       
+            
+        # Wait for all processes to complete
+        idd= 0
+        for process in processes:
+            process.wait()
+            print(f"Process in folder {"simu_"+str(idd+1)} completed.")  
+            idd+=1
+        
     def get_simu_results(self, debug="OFF", path='.'):
         fval1 = []
         fval2 = []
@@ -175,8 +172,8 @@ class MyProblem(Problem):
                 # particle loss rate
                 f3 = (self.np-partNum[-1,3])/self.np
                 
-                #fval1.append(f1-1)  #if constraints, f1-1<=0
-                fval1.append(f1)     # treat f1 as opt func
+                #fval1.append(f1-1)
+                fval1.append(f1)
                 fval2.append(f2)
                 fval3.append(f3)
             else:
@@ -196,11 +193,12 @@ class MyProblem(Problem):
         
 # Configure the NSGA-II algorithm
 #=========================================
+#base_folder = r'/mnt/d/NextCloud/subjects/20241205_match/02_Chicane/opt_python_match/03_match_BC2undu'
 base_folder = r'./'
 os.chdir(base_folder)
 
-npop  = 20
-niter = 10
+npop    = 128
+iterNum = 100
 
 algorithm = NSGA2(
     pop_size=npop,  # Population size
@@ -218,7 +216,7 @@ algorithm = NSGA2(
 res = minimize(
     MyProblem(),  # Optimization problem
     algorithm,  # Algorithm
-    termination=('n_gen', niter),  # Terminate after 200 generations
+    termination=('n_gen', iterNum),  # Terminate after 200 generations
     seed=1,  # Set random seed for reproducibility
     verbose=True  # Print optimization progress
 )
@@ -269,6 +267,6 @@ with open("res.X","w") as f:
 #%% debug
 # tmp = MyProblem()
 
-# path = base_folder +'/ini_simu'
+# path = base_folder +'/simu_ini'
 # tmp.get_simu_results(debug="ON",path=path)
 # # Out[74]: ([0.4141675194760004], [30.7898], [0.0])
