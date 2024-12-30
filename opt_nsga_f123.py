@@ -156,24 +156,29 @@ class MyProblem(Problem):
                 twiss["enx"] = twix[-1,6]
                 twiss["eny"] = twiy[-1,6]
                 
-                tmp=np.array([twiss["betax"],twiss["alphax"],twiss["betay"],twiss["alphay"]])
+                tmp=np.array([twiss["betax"],twiss["alphax"],twiss["betay"],twiss["alphay"],twiss["eny"],twiss["enx"]])
                 if np.isnan(tmp).any():
                     print("Nan value is found in "+base_dest+", inf is given.")
                     f1 = float("inf")
-                else:
-                    # target beta function
-                    betax = 8
-                    alphax = 4.55
-                    betay = 0.4
-                    alphay = 2.5
+                    f2 = float("inf")
+                    f3 = float("inf")
+                    fval1.append(f1)     # treat f1 as opt func
+                    fval2.append(f2)
+                    fval3.append(f3)
+                    continue
+                # target beta function
+                betax = 8
+                alphax = 4.55
+                betay = 0.4
+                alphay = 2.5
             
-                    f1  = self.sene(twiss["betax"],betax,1)
-                    f1 += self.sene(twiss["betay"],betay,1)
-                    f1 += self.sene(twiss["alphax"],alphax,0.1)
-                    f1 += self.sene(twiss["alphay"],alphay,0.1)
-                       
-                    #f11 = (twiss["betax"]-betax)**2 +(twiss["alphax"]-alphax)**2
-                    #f12 = (twiss["betay"]-betay)**2 +(twiss["alphay"]-alphay)**2
+                f1  = self.sene(twiss["betax"],betax,1)
+                f1 += self.sene(twiss["betay"],betay,1)
+                f1 += self.sene(twiss["alphax"],alphax,0.1)
+                f1 += self.sene(twiss["alphay"],alphay,0.1)
+                   
+                #f11 = (twiss["betax"]-betax)**2 +(twiss["alphax"]-alphax)**2
+                #f12 = (twiss["betay"]-betay)**2 +(twiss["alphay"]-alphay)**2
     
                 # get enx and eny
                 f2 = twiss["eny"]*1e6 #um rad  #(twiss["enx"]+twiss["eny"])/2
