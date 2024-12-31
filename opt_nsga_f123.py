@@ -211,8 +211,9 @@ class MyProblem(Problem):
 base_folder = r'./'
 os.chdir(base_folder)
 
-npop  = 20
-niter = 10
+npop  = 128
+niter = 50
+seed  = 1
 
 algorithm = NSGA2(
     pop_size=npop,  # Population size
@@ -231,7 +232,7 @@ res = minimize(
     MyProblem(),  # Optimization problem
     algorithm,  # Algorithm
     termination=('n_gen', niter),  # Terminate after 200 generations
-    seed=1,  # Set random seed for reproducibility
+    seed=seed,  # Set random seed for reproducibility
     verbose=True  # Print optimization progress
 )
 
