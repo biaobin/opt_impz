@@ -32,7 +32,7 @@ error = 1
 mass = 0.511001e6;
 charge = -1.0;
 
-distribution_type = 35;
+distribution_type = 19;
 Np = 10000;
 total_charge = 1e-9;
 
@@ -80,18 +80,33 @@ HIGH1_Q4: Quad,L=0.0675,K1=-7.688062919920765
 HIGH1_Q6: Quad,L=0.0675,K1=10.626746992136576
 HIGH1_Q7: Quad,L=0.0675,K1=-5.012894892348159
 
-PST_QT3: Quad,L=0.0675,K1=-0.3778133777789633
-PST_QT4: Quad,L=0.0675,K1=-0.02745736757114559
-PST_QT5: Quad,L=0.0675,K1=-0.0417351987081413
-PST_QT6: Quad,L=0.0675,K1=-0.34815942080212603
+!PST_QT3: Quad,L=0.0675,K1=-0.3778133777789633
+!PST_QT4: Quad,L=0.0675,K1=-0.02745736757114559
+!PST_QT5: Quad,L=0.0675,K1=-0.0417351987081413
+!PST_QT6: Quad,L=0.0675,K1=-0.34815942080212603
+!
+!HIGH2_Q1: Quad,L=0.0675,K1=32.06581214428667
+!HIGH2_Q2: Quad,L=0.0675,K1=-28.689654227738604
+!High2_Q5: Quad,L=0.0675,K1=-3.4750044398041857
+!
+!High3_Q1: Quad,L=0.0675,K1=28.28896424016942
+!High3_Q2: Quad,L=0.0675,K1=-39.334764453737165
+!High3_Q3: Quad,L=0.0675,K1=5.149335275571189
 
+PST_QT3: Quad,L=0.0675,K1=0.0
+PST_QT5: Quad,L=0.0675,K1=0.0
+
+PST_QT4:  Quad,L=0.0675,K1=-0.02745736757114559
+PST_QT6:  Quad,L=0.0675,K1=-0.34815942080212603
 HIGH2_Q1: Quad,L=0.0675,K1=32.06581214428667
-HIGH2_Q2: Quad,L=0.0675,K1=-28.689654227738604
-High2_Q5: Quad,L=0.0675,K1=-3.4750044398041857
 
+HIGH2_Q2: Quad,L=0.0675,K1=0.0
+
+High2_Q5: Quad,L=0.0675,K1=-3.4750044398041857
 High3_Q1: Quad,L=0.0675,K1=28.28896424016942
 High3_Q2: Quad,L=0.0675,K1=-39.334764453737165
 High3_Q3: Quad,L=0.0675,K1=5.149335275571189
+
 
 !bend section
 !-------------
@@ -120,7 +135,7 @@ h0: ematrix, R65=-4.7
 
 matchM: ematrix, R11=1
 
-w0: watch, filename_id=1000, sample_freq=1, coord_conv="normal",coord_info=0,slice_info=0
+w0: watch, filename_id=1000, sample_freq=1, coord_conv="IMPACT-Z",coord_info=1,slice_info=0
 w1: watch, filename_id=1001, sample_freq=1, coord_conv="normal",coord_info=0,slice_info=0
 w2: watch, filename_id=1002, sample_freq=1, coord_conv="normal",coord_info=0,slice_info=0
 w3: watch, filename_id=1003, sample_freq=1, coord_conv="normal",coord_info=0,slice_info=0
@@ -128,7 +143,10 @@ w4: watch, filename_id=1004, sample_freq=1, coord_conv="normal",coord_info=0,sli
 
 wm1: watch, filename_id=1010,sample_freq=1, coord_conv='IMPACT-Z',coord_info=0,slice_info=0
 
-line1: line= (w0,D1,HIGH1_Q4,D2,HIGH1_Q6,D3,HIGH1_Q7,D4,PST_QT3,D5,PST_QT4,D6,PST_QT5,D7,PST_QT6,D8,HIGH2_Q1,D9,HIGH2_Q2,D10,D11,D12,w1,Bend1,D16,Bend2,D14,D15,Bend3,D16,Bend4,w2,D17,D18,High2_Q5,D19,wm1)
+line0: line= (D1,HIGH1_Q4,D2,HIGH1_Q6,D3,HIGH1_Q7,D4,PST_QT3,D5,w0)
+
+!start from PST_QT4
+line1: line=(PST_QT4,D6,PST_QT5,D7,PST_QT6,D8,HIGH2_Q1,D9,HIGH2_Q2,D10,D11,D12,w1,Bend1,D16,Bend2,D14,D15,Bend3,D16,Bend4,w2,D17,D18,High2_Q5,D19,wm1)
 line2: line= (High3_Q1,D20,High3_Q2,D21,High3_Q3,D22,w3,D23,undu1,D24,w4)
 
 line12: line=(line1,line2)

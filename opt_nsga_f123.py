@@ -17,11 +17,11 @@ import subprocess
 class MyProblem(Problem):
     def __init__(self):
         # 8 decision variables, 3 objectives, no constraints, and variable bounds [-10, 10]
-        super().__init__(n_var=8,  # Number of variables
+        super().__init__(n_var=7,  # Number of variables
                          n_obj=3,  # Number of objectives
                          n_constr=0,  # Number of constraints
-                         xl=np.array([-40] * 8),  # Lower bounds for variables
-                         xu=np.array([40] * 8))  # Upper bounds for variables
+                         xl=np.array([-40] * 7),  # Lower bounds for variables
+                         xu=np.array([40] * 7))  # Upper bounds for variables
                  
         self.np = 1e4   #total macro-particle number
         self.cnt = 0
@@ -46,7 +46,8 @@ class MyProblem(Problem):
         # K1 = [24,-35,6]
         # change quad values from lte.impz
         fname  = 'lte.impz'   
-        alt_q = ["PST_QT5","PST_QT6","HIGH2_Q1","HIGH2_Q2","HIGH2_Q5","High3_Q1","High3_Q2","High3_Q3"]    
+        #alt_q = ["PST_QT5","PST_QT6","HIGH2_Q1","HIGH2_Q2","HIGH2_Q5","High3_Q1","High3_Q2","High3_Q3"]    
+        alt_q = ["PST_QT4","PST_QT6","HIGH2_Q1","HIGH2_Q5","High3_Q1","High3_Q2","High3_Q3"]    
         
         self.pop_size = x.shape[0]
         
@@ -157,8 +158,9 @@ class MyProblem(Problem):
                 twiss["eny"] = twiy[-1,6]
                 
                 tmp=np.array([twiss["betax"],twiss["alphax"],twiss["betay"],twiss["alphay"],twiss["eny"],twiss["enx"]])
-                if np.isnan(tmp).any():
-                    print("Nan value is found in "+base_dest+", inf is given.")
+                print("twiss=",tmp)
+                if np.isnan(tmp).any() or np.isinf(tmp).any():
+                    print("Nan/inf value is found in "+base_dest+", inf is given.")
                     f1 = float("inf")
                     f2 = float("inf")
                     f3 = float("inf")
@@ -213,7 +215,7 @@ os.chdir(base_folder)
 
 npop  = 128
 niter = 50
-seed  = 1
+seed  = 2
 
 algorithm = NSGA2(
     pop_size=npop,  # Population size
@@ -242,18 +244,21 @@ print(res.F)  # Objective values of Pareto-optimal solutions
 print("Final Decision Variables:")
 print(res.X)  # Decision variables corresponding to Pareto-optimal solutions
 
-#save the results
+# save the results
 with open("res.F","w") as f:
     np.savetxt(f, res.F, fmt="%15.6e")
 
 with open("res.X","w") as f:
     np.savetxt(f, res.X, fmt="%15.6e")
 
-
+#%% read the txt results and then plot 
+#resF=np.loadtxt('./res.F')
+#resX=np.loadtxt('./res.X')
+#
 ## Plot the Pareto front in 3D
 #fig = plt.figure()
 #ax = fig.add_subplot(111, projection='3d')
-#ax.scatter(res.F[:, 0], res.F[:, 1], res.F[:, 2], c='red')
+#ax.scatter(resF[:, 0], resF[:, 1], resF[:, 2], c='red')
 #ax.set_xlabel("match error")
 #ax.set_ylabel("eny (um rad)")
 #ax.set_zlabel("loss rate")
